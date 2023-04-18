@@ -10,6 +10,7 @@ import * as web3 from "@solana/web3.js";
 const Home: NextPage = () => {
   const [balance, setBalance] = useState(0);
   const [address, setAddress] = useState("");
+  const [executable, setExecutable] = useState(false);
 
   const addressSubmittedHandler = (address: string) => {
     try {
@@ -21,12 +22,18 @@ const Home: NextPage = () => {
       connection.getBalance(key).then((balance) => {
         setBalance(balance / web3.LAMPORTS_PER_SOL);
       });
+
+      connection.getAccountInfo(key).then((executable) => {
+        if (executable) {
+          setExecutable(true);
+        }
+      });
     } catch (error) {
       setAddress("");
       setBalance(0);
-      const errMsg = new Error("Address not found.");
-      console.log(errMsg);
-      alert("Address not found.");
+      // const errMsg = new Error("Address not found.");
+      // console.log(errMsg);
+      // alert("Address not found.");
     }
   };
 
@@ -37,6 +44,7 @@ const Home: NextPage = () => {
         <AddressForm handler={addressSubmittedHandler} />
         <p>{`Address: ${address}`}</p>
         <p>{`Balance: ${balance} SOL`}</p>
+        <p>{`Is it executable? ${executable ? "yep" : "nope"}`}</p>
       </header>
     </div>
   );
